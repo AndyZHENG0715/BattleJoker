@@ -8,7 +8,7 @@
 ## Project Requirements
 
 ### Team Formation
-- Form a group of 3 members.
+- [x] Form a group of 3 members.
 
 ### Grading Breakdown (Total 100 Marks)
 - Core Part: Up to 60%
@@ -19,11 +19,11 @@
 
 #### Version 1 (Up to 40%)
 - **Server-Client Architecture**:
-  - Move card logic to server.
-  - Manage database on server.
-  - Use SQLite libraries.
+  - [x] Move card logic to server.
+  - [x] Manage database on server.
+  - [x] Use SQLite libraries.
 - **Client Requirements**:
-  - Prompt for name, server IP, and port.
+  - [x] Prompt for name, server IP, and port. //Bugs fixing needed
   - Display and manipulate puzzle.
   - Transmit moves to server.
 - **End Game**:
