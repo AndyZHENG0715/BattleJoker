@@ -3,7 +3,6 @@ import javafx.stage.Stage;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.net.Socket;
 import java.sql.SQLException;
 
 public class BattleJoker extends Application {
@@ -13,8 +12,10 @@ public class BattleJoker extends Application {
     public void start(Stage primaryStage) { //starting point of application
         try {
             GetNameDialog dialog = new GetNameDialog();
-            GameWindow win = new GameWindow(primaryStage);
-            win.setName(dialog.getPlayername());
+            String serverIP = dialog.getServerIP();
+            int serverPort = dialog.getServerPort();
+            GameWindow win = new GameWindow(primaryStage, serverIP, serverPort);
+            win.setName(dialog.getPlayerName());
             Database.connect();
 //            clientSocket = new Socket("127.0.0.1", 12345); //change this hard code later
         } catch (Exception ex) {

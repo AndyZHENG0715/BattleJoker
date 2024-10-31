@@ -48,9 +48,9 @@ public class GameWindow {
     final String imagePath = "images/";
     final String[] symbols = {"bg", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "Joker"};
     final Image[] images = new Image[symbols.length];
-    final GameEngine gameEngine = GameEngine.getInstance();
+    GameEngine gameEngine;
 
-    public GameWindow(Stage stage) throws IOException {
+    public GameWindow(Stage stage, String serverIP, int serverPort) throws IOException {
         loadImages();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("mainUI.fxml"));
@@ -72,7 +72,7 @@ public class GameWindow {
         stage.show();
         initCanvas();
 
-        gameStart();
+//        gameStart();
     }
 
     private void gameStart() {
