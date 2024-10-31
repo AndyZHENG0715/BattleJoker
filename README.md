@@ -58,8 +58,7 @@
 - **Cancel Last Action**: Undo last action once per turn.
 - **Debugging**: Fix bugs and document them.
 
-<details>
-<summary>Project Report & Video Demonstration (Up to 15%)</summary>
+### Project Report & Video Demonstration (Up to 15%)
 
 - Complete a project report using the template.
 - Record a video demonstration:
@@ -67,13 +66,7 @@
   - Demonstrate server and client interactions.
   - Use multiple computers for gameplay.
 
-</details>
-
-<details>
-<summary>Submission</summary>
-
+### Submission
 - **Program Zip**: Include entire project folder.
 - **Video File**: MP4 format, < 500GB.
 - **Deadline**: Submit all files before the deadline.
-
-</details>
