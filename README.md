@@ -1,9 +1,13 @@
 # COMP3015 Group Project: Battle Joker
 
-## Project Overview
+<details>
+<summary>Project Overview</summary>
+
 - **Game Concept**: Inspired by 2048 using poker cards.
 - **Objective**: Combine cards to create a JOKER card.
 - **Multiplayer Goal**: Enhance for online play.
+
+</details>
 
 ## Project Requirements
 
@@ -18,12 +22,13 @@
 ### Core Part Implementation
 
 #### Version 1 (Up to 40%)
+
 - **Server-Client Architecture**:
   - [x] Move card logic to server.
   - [x] Manage database on server.
   - [x] Use SQLite libraries.
 - **Client Requirements**:
-  - [x] Prompt for name, server IP, and port. //Bugs fixing needed
+  - [x] Prompt for name, server IP, and port.
   - Display and manipulate puzzle.
   - Transmit moves to server.
 - **End Game**:
@@ -31,6 +36,7 @@
   - Display top 10 scores if needed.
 
 #### Version 2 (Up to 50%)
+
 - Includes all Version 1 requirements.
 - **Multiplayer Functionality**:
   - Handle up to 4 players.
@@ -39,6 +45,7 @@
   - Start new game for waiting players.
 
 #### Version 3 (Up to 60%)
+
 - Includes all Version 2 requirements.
 - **Concurrent Games**:
   - Support multiple games simultaneously.
@@ -51,14 +58,22 @@
 - **Cancel Last Action**: Undo last action once per turn.
 - **Debugging**: Fix bugs and document them.
 
-### Project Report & Video Demonstration (Up to 15%)
+<details>
+<summary>Project Report & Video Demonstration (Up to 15%)</summary>
+
 - Complete a project report using the template.
 - Record a video demonstration:
   - Show team members.
   - Demonstrate server and client interactions.
   - Use multiple computers for gameplay.
 
-### Submission
+</details>
+
+<details>
+<summary>Submission</summary>
+
 - **Program Zip**: Include entire project folder.
 - **Video File**: MP4 format, < 500GB.
 - **Deadline**: Submit all files before the deadline.
+
+</details>
