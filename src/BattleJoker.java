@@ -57,4 +57,3 @@ class FilteredStream extends PrintStream {
             super.print(x);
     }
 }
-

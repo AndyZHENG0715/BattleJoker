@@ -39,18 +39,19 @@ public class GetNameDialog {
         stage.setMinWidth(scene.getWidth());
         stage.setMinHeight(scene.getHeight());
 
-        goButton.setOnMouseClicked(this::OnButtonClick);
+        goButton.setOnMouseClicked(this::onButtonClick);
 
         stage.showAndWait();
     }
 
     @FXML
-    void OnButtonClick(Event event) {
+    void onButtonClick(Event event) {
         playerName = nameField.getText().trim();
         serverIP = ipField.getText().trim();
         serverPort = Integer.parseInt(portField.getText().trim());
-        if (playerName.length() > 0)
+        if (!playerName.isEmpty() && !serverIP.isEmpty() && serverPort > 0) {
             stage.close();
+        }
     }
 
     public String getPlayerName() {

@@ -17,14 +17,12 @@ public class GameEngine {
     private static GameEngine instance;
 
     private boolean gameOver;
-
     //    private String playerName;
-//    private int level = 1;
-//    private int score;
-//    private int combo;
-//    private int totalMoveCount;
-//    private int numOfTilesMoved;
-
+    //    private int level = 1;
+    //    private int score;
+    //    private int combo;
+    //    private int totalMoveCount;
+    //    private int numOfTilesMoved;
     //    private final Map<String, Runnable> actionMap = new HashMap<>();
 
     private GameEngine(String serverIP, int serverPort) throws IOException {

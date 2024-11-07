@@ -27,7 +27,6 @@ public class JokerServer {
 
     public static final int LIMIT = 14;
 
-
     public JokerServer(int port) throws IOException {
         // define a hash map to contain the links from the actions to the corresponding methods
         actionMap.put("U", this::moveUp);
@@ -39,7 +38,7 @@ public class JokerServer {
 
         ServerSocket srvSocket = new ServerSocket(port);
 
-        while(true) {
+        while (true) {
             Socket clientSocket = srvSocket.accept();
 
             synchronized (clientList) { //lock the list, when using the muti-thread
@@ -60,6 +59,7 @@ public class JokerServer {
             t.start();   //start the thread to serve multiple client
         }
     }
+
     public void serve(Socket clientSocket) throws IOException {
         System.out.println("New Connection: ");
         System.out.println(clientSocket.getInetAddress());
@@ -79,7 +79,6 @@ public class JokerServer {
             for (int i : board) //check server really run things
                 System.out.print(i + " ");
 
-
 //            gameOver = !nextRound();
 
             for(Socket s : clientList) {
@@ -92,7 +91,7 @@ public class JokerServer {
             }
         }
     }
-    public  void sendPuzzle(DataOutputStream out) throws IOException {
+    public void sendPuzzle(DataOutputStream out) throws IOException {
         out.write('A');   //going to an array
         out.writeInt(board.length); //send size of the array
 
@@ -218,14 +217,15 @@ public class JokerServer {
             }
             if (i != j)
                 numOfTilesMoved++;
-
         }
     }
+
     public int getValue(int r, int c) {
         synchronized (board) {
             return board[r * SIZE + c];
         }
     }
+
     public boolean isGameOver() {
         return gameOver;
     }

@@ -69,10 +69,12 @@ public class GameWindow {
         stage.heightProperty().addListener(h -> onHeightChangedWindow(((ReadOnlyDoubleProperty) h).getValue()));
         stage.setOnCloseRequest(event -> quit());
 
+        gameEngine = GameEngine.getInstance(serverIP, serverPort); // Initialize GameEngine
+
         stage.show();
         initCanvas();
 
-//        gameStart();
+        gameStart();
     }
 
     private void gameStart() {
@@ -121,6 +123,7 @@ public class GameWindow {
     }
 
     private void render() {
+        if (gameEngine == null) return; // Ensure gameEngine is not null
 
         double w = canvas.getWidth();
         double h = canvas.getHeight();
