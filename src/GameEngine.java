@@ -15,13 +15,12 @@ public class GameEngine {
     private String serverIP;
     private int serverPort;
     private static GameEngine instance;
-
-    private boolean gameOver;
     //    private String playerName;
-    //    private int level = 1;
-    //    private int score;
-    //    private int combo;
-    //    private int totalMoveCount;
+    private boolean gameOver;
+    private int score;
+    private int level = 1;
+    private int combo;
+    private int totalMoveCount;
     //    private int numOfTilesMoved;
     //    private final Map<String, Runnable> actionMap = new HashMap<>();
 
@@ -61,10 +60,14 @@ public class GameEngine {
     }
 
     public void receiveArray(DataInputStream in) throws IOException {
-        int size = in.readInt();
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < board.length; i++) {
             board[i] = in.readInt();
         }
+        gameOver = in.readBoolean();
+        score = in.readInt();
+        level = in.readInt();
+        combo = in.readInt();
+        totalMoveCount = in.readInt();
     }
 
     public static GameEngine getInstance(String serverIP, int serverPort) {
@@ -106,27 +109,27 @@ public class GameEngine {
         }
     }
 
-//    public boolean isGameOver() {
-//        return gameOver;
-//    }
-//
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
 //    public void setPlayerName(String name) {
 //        playerName = name;
 //    }
-//
-//    public int getScore() {
-//        return score;
-//    }
-//
-//    public int getCombo() {
-//        return combo;
-//    }
-//
-//    public int getLevel() {
-//        return level;
-//    }
-//
-//    public int getMoveCount() {
-//        return totalMoveCount;
-//    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public int getCombo() {
+        return combo;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public int getMoveCount() {
+        return totalMoveCount;
+    }
 }

@@ -32,12 +32,12 @@
   - [x] Display and manipulate puzzle.
   - [x] Transmit moves to server.
 - **End Game**:
-  - [ ] Server records and shares scores.
-  - [ ] Display top 10 scores if needed.
+  - [x] Server records and shares scores.
+  - [x] Display top 10 scores if needed.
 
 #### Version 2 (Up to 50%)
 
-- [ ] Includes all Version 1 requirements.
+- [x] Includes all Version 1 requirements.
 - **Multiplayer Functionality**:
   - [x] Handle up to 4 players.
   - [ ] Allow turns with 4 moves each.

@@ -53,12 +53,12 @@ public class ScoreboardWindow {
     private void updateList() {
         try {
             ObservableList<String> items = FXCollections.observableArrayList();
-            Database.getScores().forEach(data->{
+            Database.getScores().forEach(data -> {
                 String scoreStr = String.format("%s (%s)", data.get("score"), data.get("level"));
                 items.add(String.format("%10s | %10s | %s", data.get("name"), scoreStr, data.get("time").substring(0, 16)));
             });
             scoreList.setItems(items);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }

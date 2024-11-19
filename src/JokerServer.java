@@ -66,7 +66,9 @@ public class JokerServer {
         System.out.println(clientSocket.getLocalPort());
 
         DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+        playerName = in.readUTF();
         DataOutputStream _out = new DataOutputStream(clientSocket.getOutputStream());
+        out.writeUTF(playerName); // Send player name to server
         sendPuzzle(_out);
 
         while (true) {
@@ -91,15 +93,17 @@ public class JokerServer {
             }
         }
     }
+
     public void sendPuzzle(DataOutputStream out) throws IOException {
-        out.write('A');   //going to an array
-        out.writeInt(board.length); //send size of the array
-
-        for (int i : board) {
-            out.writeInt(i);  //send the values of the array
+        out.writeChar('A'); // Indicate data type
+        for (int v : board) {
+            out.writeInt(v);
         }
-        out.flush(); //force java to send the data out
-
+        out.writeBoolean(gameOver);
+        out.writeInt(score);
+        out.writeInt(level);
+        out.writeInt(combo);
+        out.writeInt(totalMoveCount);
     }
 
     public void moveMerge(String dir) {
@@ -217,6 +221,13 @@ public class JokerServer {
             }
             if (i != j)
                 numOfTilesMoved++;
+        }
+        if (gameOver) {
+            try {
+                Database.putScore(playerName, score, level);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

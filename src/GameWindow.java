@@ -94,29 +94,29 @@ public class GameWindow {
                 ex.printStackTrace(); //debug
                 System.exit(-1); //cannot just end it, project need to show a box or a window to end it
             }
-//            scoreLabel.setText("Score: " + gameEngine.getScore());
-//            levelLabel.setText("Level: " + gameEngine.getLevel());
-//            comboLabel.setText("Combo: " + gameEngine.getCombo());
-//            moveCountLabel.setText("# of Moves: " + gameEngine.getMoveCount());
+            scoreLabel.setText("Score: " + gameEngine.getScore());
+            levelLabel.setText("Level: " + gameEngine.getLevel());
+            comboLabel.setText("Combo: " + gameEngine.getCombo());
+            moveCountLabel.setText("# of Moves: " + gameEngine.getMoveCount());
         });
 
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 render();
-//                if (gameEngine.isGameOver()) {
-//                    System.out.println("Game Over!");
-//                    animationTimer.stop();
-//
-//                    Platform.runLater(() -> {
-//                        try {
-//                            new ScoreboardWindow();
-//                        } catch (IOException ex) {
-//                            throw new RuntimeException(ex);
-//                        }
-//                    });
-//
-//                }
+                if (gameEngine.isGameOver()) {
+                    System.out.println("Game Over!");
+                    animationTimer.stop();
+
+                    Platform.runLater(() -> {
+                        try {
+                            new ScoreboardWindow();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    });
+
+                }
             }
         };
         canvas.requestFocus();
