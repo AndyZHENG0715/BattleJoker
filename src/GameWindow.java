@@ -130,7 +130,7 @@ public class GameWindow {
             }
         });
 
-//        gameEngine = GameEngine.getInstance(serverIP, serverPort); // Initialize GameEngine
+        gameEngine = GameEngine.getInstance(serverIP, serverPort); // Initialize GameEngine
 
         stage.show();
 
@@ -393,5 +393,29 @@ public class GameWindow {
             alert.setContentText(message);
             alert.showAndWait();
         });
+    }
+
+    animationTimer = new AnimationTimer() {
+        @Override
+        public void handle(long now) {
+            // Animation logic
+        }
+    };
+
+    moveCheckTimer = new AnimationTimer() {
+        @Override
+        public void handle(long now) {
+            // Move check logic
+        }
+    };
+
+    if (gameEngine == null) {
+        throw new IllegalStateException("GameEngine is not initialized");
+    }
+    if (animationTimer == null || moveCheckTimer == null) {
+        throw new IllegalStateException("Timers are not initialized");
+    }
+    if (message == null) {
+        throw new IllegalStateException("Message TextArea is not initialized");
     }
 }
