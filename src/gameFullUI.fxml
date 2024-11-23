@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="500.0" prefWidth="500.0" spacing="20" style="-fx-background-color: #f0f0f0;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+    <Label fx:id="warningLabel" text="The Game Is Full! Do you want to wait for the next game or leave?" textAlignment="CENTER" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333;">
+        <font>
+            <Font size="18.0" />
+        </font>
+    </Label>
+    <HBox alignment="CENTER" spacing="20">
+        <Button fx:id="waitButton" text="Wait" style="-fx-font-size: 15px; -fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 10px 20px;">
+            <font>
+                <Font size="15.0"/>
+            </font>
+        </Button>
+        <Button fx:id="leaveButton" text="Leave" style="-fx-font-size: 15px; -fx-background-color: #f44336; -fx-text-fill: white; -fx-padding: 10px 20px;">
+            <font>
+                <Font size="15.0"/>
+            </font>
+        </Button>
+    </HBox>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+</VBox>

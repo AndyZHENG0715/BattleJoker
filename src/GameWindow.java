@@ -54,7 +54,7 @@ public class GameWindow {
     Label currentPlayerLabel;
 
     @FXML
-    timerLabel;
+    Label timerLabel;
 
     @FXML
     Button goButton;
@@ -69,7 +69,7 @@ public class GameWindow {
     MenuItem loadMenuItem;
 
     @FXML
-    TextArea TextArea;
+    TextArea message;
 
     long startTime = 0;
     Stage stage;
@@ -89,9 +89,11 @@ public class GameWindow {
         gameEngine = GameEngine.getInstance(serverIP, serverPort); // Initialize GameEngine
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("mainUI.fxml"));
+
         if (loader.getLocation() == null) {
             throw new IOException("FXML file not found");
         }
+
         loader.setController(this);
         Parent root = loader.load();
         Scene scene = new Scene(root);
@@ -124,6 +126,8 @@ public class GameWindow {
         });
 
 //        gameEngine = GameEngine.getInstance(serverIP, serverPort); // Initialize GameEngine
+
+        stage.show();
 
         if (gameEngine.getPlayerCount() == 1 && !gameEngine.getGameStarted()) {
             goButton.setVisible(true);
@@ -161,9 +165,9 @@ public class GameWindow {
 
 
     private void gameStart() {
-        animationTimer.start();
         startTime = System.currentTimeMillis();  // Initialize the start time
         gameEngine.startTimer();  // Start the timer in GameEngine
+        animationTimer.start();
         moveCheckTimer.start();
         message.appendText("Message: Game Started\n");
     }
@@ -174,35 +178,56 @@ public class GameWindow {
     }
 
     private void initCanvas() {
-        canvas.setOnKeyPressed(event -> {
-            try {
-                gameEngine.moveMerge(event.getCode().toString());
-            } catch (IOException ex) {
-                ex.printStackTrace(); //debug
-                System.exit(-1); //cannot just end it, project need to show a box or a window to end it
+        moveCheckTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if (gameEngine.getCanMove() == 1 && !gameEngine.isGameOver()) {
+                    updateCurrentPlayer();
+                    canvas.setOnKeyPressed(event -> {
+                        try {
+                            gameEngine.moveMerge(event.getCode().toString());
+                        } catch (IOException ex) {
+                            ex.printStackTrace(); //debug
+                            System.exit(-1); //cannot just end it, project need to show a box or a window to end it
+                        }
+                        //            scoreLabel.setText("Score: " + gameEngine.getScore());
+                        //            levelLabel.setText("Level: " + gameEngine.getLevel());
+                        //            comboLabel.setText("Combo: " + gameEngine.getCombo());
+                        //            moveCountLabel.setText("# of Moves: " + gameEngine.getMoveCount());
+                    });
+                } else {
+                    // Remove the event handler if the player cannot move
+                    canvas.setOnKeyPressed(null);
+                }
             }
-//            scoreLabel.setText("Score: " + gameEngine.getScore());
-//            levelLabel.setText("Level: " + gameEngine.getLevel());
-//            comboLabel.setText("Combo: " + gameEngine.getCombo());
-//            moveCountLabel.setText("# of Moves: " + gameEngine.getMoveCount());
-        });
+        };
 
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                updateCurrentPlayer();
                 render();
+                updateTimerDisplay();
+                updateMessage();
                 if (gameEngine.isGameOver()) {
                     System.out.println("Game Over!");
                     animationTimer.stop();
-
+                    saveMenuItem.setVisible(false);
+                    loadMenuItem.setVisible(false);
                     Platform.runLater(() -> {
                         try {
+                            new gameWinnerWindow(gameEngine);
                             new ScoreboardWindow();
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
                     });
-
+                } else if (gameEngine.getMoveLeft() == 4){
+                    cancelButton.setVisible(true);
+                    cancelButton.setDisable(false);
+                } else if (gameEngine.getMoveLeft() == 0) {
+                    cancelButton.setVisible(false);
+                    cancelButton.setDisable(true);
                 }
             }
         };
@@ -228,6 +253,11 @@ public class GameWindow {
         double y = startY;
         int v;
 
+        scoreLabel.setText("Score: " + gameEngine.getScore());
+        levelLabel.setText("Level: " + gameEngine.getLevel());
+        comboLabel.setText("Combo: " + gameEngine.getCombo());
+        moveCountLabel.setText("Moves: " + gameEngine.getMoveCount());
+
         // Draw the background and cards from left to right, and top to bottom.
         for (int i = 0; i < GameEngine.SIZE; i++) {
             double x = startX;
@@ -242,6 +272,16 @@ public class GameWindow {
                 x += blockSize;
             }
             y += blockSize;
+        }
+    }
+
+    private void updateMessage(){
+        if(gameEngine.getUpdate()){
+            message.appendText("Message: " + gameEngine.getUpdatePlayer() + " just Update Last Action!\n");
+            gameEngine.setUpdate();
+        }else if(gameEngine.getCancel()){
+            message.appendText("Message: " + gameEngine.getCancelPlayer() + " just Cancel Last Action!\n");
+            gameEngine.setCancel();
         }
     }
 
@@ -279,11 +319,25 @@ public class GameWindow {
 
     public void setName(String name) {
         nameLabel.setText(name);
-//        gameEngine.setPlayerName(name);
+        try {
+            gameEngine.setPlayerName(name);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void updatePlayerNumber() {
         numberofPlayerLabel.setText("Number of Players: " + gameEngine.getPlayerCount());
+    }
+
+    private void updateCurrentPlayer() {
+        currentPlayerLabel.setText("Current Player: " + gameEngine.getCurrentPlayer());
+    }
+
+    private void updateTimerDisplay() {
+        long elapsedTime = System.currentTimeMillis() - startTime;  // Get elapsed time
+        double seconds = elapsedTime / 1000.0;  // Convert milliseconds to seconds
+        timerLabel.setText(String.format("Time: %.2f s", seconds));  // Update timer label
     }
 
     private void savePuzzle() {
