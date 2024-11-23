@@ -62,10 +62,10 @@ public class GameWindow {
     Label timerLabel;
 
     @FXML
-    Button goButton;
+    private Button goButton;
 
     @FXML
-    Button cancelButton;
+    private Button cancelButton;
 
     @FXML
     MenuItem saveMenuItem;
