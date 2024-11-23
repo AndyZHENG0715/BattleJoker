@@ -15,8 +15,8 @@
 - [x] Form a group of 3 members.
 
 ### Grading Breakdown (Total 100 Marks)
-- [ ] Core Part: Up to 60%
-- [ ] Additional Features: Up to 25%
+- [x] Core Part: Up to 60%
+- [x] Additional Features: Up to 25%
 - [ ] Project Report & Video: Up to 15%
 
 ### Core Part Implementation
@@ -40,22 +40,22 @@
 - [x] Includes all Version 1 requirements.
 - **Multiplayer Functionality**:
   - [x] Handle up to 4 players.
-  - [ ] Allow turns with 4 moves each.
+  - [x] Allow turns with 4 moves each.
   - [ ] Notify players about turn order.
-  - [ ] Start new game for waiting players.
+  - [x] Start new game for waiting players.
 
 #### Version 3 (Up to 60%)
 
 - [ ] Includes all Version 2 requirements.
 - **Concurrent Games**:
-  - [ ] Support multiple games simultaneously.
+  - [x] Support multiple games simultaneously.
 
 ### Additional Features (Up to 25%)
 
 #### Suggested Features
-- [ ] **Multicast Scoreboard**: Display top 10 scores via multicast.
-- [ ] **Puzzle Saving/Uploading**: Save and upload puzzle data.
-- [ ] **Cancel Last Action**: Undo last action once per turn.
+- [x] **Multicast Scoreboard**: Display top 10 scores via multicast.
+- [x] **Puzzle Saving/Uploading**: Save and upload puzzle data.
+- [x] **Cancel Last Action**: Undo last action once per turn.
 - [ ] **Debugging**: Fix bugs and document them.
 
 ### Project Report & Video Demonstration (Up to 15%)

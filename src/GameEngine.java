@@ -243,12 +243,12 @@ public class GameEngine {
     }
 
     public static GameEngine getInstance(String IP, int Port) {
-        if (instance == null) {
-            try {
+        try {
+            if (instance == null)
                 instance = new GameEngine(IP, Port);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        } catch (IOException e) {
+            e.printStackTrace(); // Should handle this more gracefully
+            System.exit(-1);  // Abrupt termination
         }
         return instance;
     }

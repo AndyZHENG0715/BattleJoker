@@ -65,7 +65,7 @@ public class Game {
         }
     }
 
-    public void serve(Player player) {
+    public synchronized void serve(Player player) {
         System.out.println(player.socket.getInetAddress());
         DataInputStream in = null;
         DataOutputStream out = null;
@@ -83,7 +83,9 @@ public class Game {
             }
 
             // Send initial turn notification
-            sendTurnNotification(out, false); // Initially, the player cannot move
+            if (currentPlayer != null) {
+                sendTurnNotification(out, currentPlayer.equals(player));
+            }
             sendMoveCountNotification(out, 0); // No moves left initially
 
             movesLeft = 0;
@@ -97,10 +99,10 @@ public class Game {
                         loadPuzzleFromStream(in);
                         synchronized (clientList) {
                             for (Player p : clientList) {
-                                DataOutputStream pOut = new DataOutputStream(p.socket.getOutputStream());
-                                sendUpdatePuzzle(pOut);
-                                sendArray(pOut);
-                                sendLevel(pOut);
+                                DataOutputStream dos = new DataOutputStream(p.socket.getOutputStream());
+                                sendUpdatePuzzle(dos);
+                                sendArray(dos);
+                                sendLevel(dos);
                             }
                         }
                         break;
@@ -158,7 +160,7 @@ public class Game {
 
     private void handleMoveMerge(Player player, DataInputStream in, DataOutputStream out) throws IOException {
         System.out.print(player.name + ": ");
-        char dir = (char) in.read();
+        char dir = in.readChar();
         System.out.println(dir);
 
         if (player.equals(currentPlayer)) {
@@ -171,11 +173,11 @@ public class Game {
                 sendMove(out, player);
 
                 for (Player s : clientList) {
-                    DataOutputStream sOut = new DataOutputStream(s.socket.getOutputStream());
-                    sOut.write(dir);
-                    sOut.flush();
-                    sendArray(sOut);
-                    sendLevel(sOut);
+                    DataOutputStream dos = new DataOutputStream(s.socket.getOutputStream());
+                    dos.write(dir);
+                    dos.flush();
+                    sendArray(dos);
+                    sendLevel(dos);
                 }
 
                 movesLeft--;
@@ -206,9 +208,9 @@ public class Game {
         currentPlayer.previousTotalMoveCount = 0;
 
 
-        DataOutputStream nextOut = new DataOutputStream(currentPlayer.socket.getOutputStream());
-        sendTurnNotification(nextOut, true);
-        sendMoveCountNotification(nextOut, movesLeft);
+        DataOutputStream dos = new DataOutputStream(currentPlayer.socket.getOutputStream());
+        sendTurnNotification(dos, true);
+        sendMoveCountNotification(dos, movesLeft);
 
         for (Player p : clientList) {
             sendCurrentPlayer(new DataOutputStream(p.socket.getOutputStream()));
@@ -217,13 +219,17 @@ public class Game {
 
 
     private void loadPuzzleFromStream(DataInputStream in) throws IOException {
+        int newSize = in.readInt();
+        if (newSize != SIZE) {
+            throw new IOException("Invalid puzzle size");
+        }
         synchronized (board) {
-            int newSize = in.readInt();
-            if (newSize != SIZE) {
-                throw new IOException("Invalid puzzle size");
-            }
             for (int i = 0; i < board.length; i++) {
-                board[i] = in.readInt();
+                int value = in.readInt();
+                if (value < 0 || value > LIMIT) {
+                    throw new IOException("Invalid board value at index " + i);
+                }
+                board[i] = value;
             }
             currentPlayer = findPlayerByName(in.readUTF());
             level = in.readInt();
@@ -247,14 +253,14 @@ public class Game {
 
 
     private boolean nextRound() {
-        if (isFull()) return false;
+        if (isFull()) {
+            return false;
+        }
         int i;
-
         // randomly find an empty place
         do {
             i = random.nextInt(SIZE * SIZE);
         } while (board[i] > 0);
-
         // randomly generate a card based on the existing level, and assign it to the select place
         board[i] = random.nextInt(level) / 4 + 1;
         return true;
@@ -288,41 +294,29 @@ public class Game {
 
     private void moveMerge(int d, int s, int l, Player player) {
         int v, j;
-        for (int i = s - d; i != l - d; i -= d) {
+        for (int i = s; i != l; i += d) {
             j = i;
             if (board[j] <= 0) continue;
             v = board[j];
             board[j] = 0;
-            while (j + d != s && board[j + d] == 0)
-                j += d;
-
-            if (board[j + d] == 0) {
-                j += d;
-                board[j] = v;
-            } else {
-                while (j != s && board[j + d] == v) {
-                    j += d;
-                    board[j] = 0;
-                    v++;
-                    player.score++;
-                    combo++;
-                }
-                board[j] = v;
-                if (v > level) {
-                    level = v;
-                    for (Player p : clientList) {
-                        p.level = v;
-                    }
-                }
+            
+            while ((j - d) >= 0 && (j - d) < board.length && board[j - d] == 0) {
+                j -= d;
             }
-            if (i != j)
-                numOfTilesMoved++;
+            
+            if ((j - d) >= 0 && (j - d) < board.length && board[j - d] == v) {
+                board[j - d]++;
+                player.score++;
+                combo++;
+            } else {
+                board[j] = v;
+            }
         }
     }
 
     public void moveMerge(String dir, Player player) {
-        synchronized (board) {
-            if (actionMap.containsKey(dir)) {
+        if (actionMap.containsKey(dir)) {
+            synchronized (board) {
                 // Store previous state
                 player.previousBoard = board.clone();
                 player.previousScore = player.score;

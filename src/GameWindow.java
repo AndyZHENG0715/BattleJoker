@@ -316,10 +316,16 @@ public class GameWindow {
         render();
     }
 
-    void quit() {
-        System.out.println("Bye bye");
-        stage.close();
-        System.exit(0);
+    public void quit() {
+        cleanup();
+        stage.exit();
+    }
+
+    public void cleanup() {
+        if (animationTimer != null) animationTimer.stop();
+        if (gameTimer != null) gameTimer.stop();
+        if (moveCheckTimer != null) moveCheckTimer.stop();
+        if (newGameTimer != null) newGameTimer.stop();
     }
 
     public void setName(String name) {
@@ -411,5 +417,15 @@ public class GameWindow {
             }
         };
         newGameTimer.start();
+    }
+
+    private void handleError(Exception ex, String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(message);
+            alert.setContentText(ex.getMessage());
+            alert.showAndWait();
+        });
     }
 }

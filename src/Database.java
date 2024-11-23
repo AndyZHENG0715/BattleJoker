@@ -6,31 +6,44 @@ public class Database {
     final static String url = "jdbc:sqlite:data/battleJoker.db";
     static Connection conn;
 
-    public static void connect() throws SQLException, ClassNotFoundException {
-        if (conn == null) {
-//            Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection(url);
+    public static void connect() {
+        try {
+            if (conn == null || conn.isClosed()) {
+                // Class.forName("org.sqlite.JDBC");
+                conn = DriverManager.getConnection(url);
+            }
+        } catch (SQLException e) {
+            // Log the error appropriately
+            System.err.println("Database connection error: " + e.getMessage());
         }
-
     }
 
-    public static void disconnect() throws SQLException {
-        if (conn != null)
-            conn.close();
+    public static void disconnect() {
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                // Log the error
+                System.err.println("Error closing database connection: " + e.getMessage());
+            } finally {
+                conn = null;
+            }
+        }
     }
 
     public static ArrayList<HashMap<String, String>> getScores() throws SQLException {
         String sql = "SELECT * FROM scores ORDER BY score DESC LIMIT 10";
         ArrayList<HashMap<String, String>> data = new ArrayList<>();
-        Statement statement = conn.createStatement();
-        ResultSet resultSet = statement.executeQuery(sql);
-        while (resultSet.next()) {
-            HashMap<String, String> m = new HashMap<>();
-            m.put("name", resultSet.getString("name"));
-            m.put("score", resultSet.getString("score"));
-            m.put("level", resultSet.getString("level"));
-            m.put("time", resultSet.getString("time"));
-            data.add(m);
+        try (Statement statement = conn.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            while (resultSet.next()) {
+                HashMap<String, String> m = new HashMap<>();
+                m.put("name", resultSet.getString("name"));
+                m.put("score", resultSet.getString("score"));
+                m.put("level", resultSet.getString("level"));
+                m.put("time", resultSet.getString("time"));
+                data.add(m);
+            }
         }
         return data;
     }
