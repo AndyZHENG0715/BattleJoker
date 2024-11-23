@@ -132,6 +132,9 @@ public class GameWindow {
 
         gameEngine = GameEngine.getInstance(serverIP, serverPort); // Initialize GameEngine
 
+        // Initialize timers before starting the game
+        initGameTimers();
+
         stage.show();
 
         if (gameEngine.getPlayerCount() == 1 && !gameEngine.getGameStarted()) {
@@ -168,6 +171,25 @@ public class GameWindow {
         }
     }
 
+    private void initGameTimers() {
+        animationTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                // Animation logic
+                render();
+                updateTimerDisplay();
+                updateCurrentPlayer();
+            }
+        };
+
+        moveCheckTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                // Logic to check moves, game state, etc.
+                updateMessage();
+            }
+        };
+    }
 
     private void gameStart() {
         startTime = System.currentTimeMillis();  // Initialize the start time
@@ -278,7 +300,7 @@ public class GameWindow {
     public void cleanup() {
         if (animationTimer != null) animationTimer.stop();
         if (gameTimer != null) gameTimer.stop();
-        if (moveCheckTimer != null) moveCheckTimer.stop();
+        if (moveCheckTimer != null) gameTimer.stop();
         if (newGameTimer != null) newGameTimer.stop();
     }
 
@@ -344,12 +366,11 @@ public class GameWindow {
                     goButton.setDisable(true);
                     Platform.runLater(() -> {
                         initCanvas();
+                        // Ensure timers are initialized before starting the game
                         gameStart();
                         gameTimer.stop(); // Stop the timer once the game starts
-
                         saveMenuItem.setVisible(true);
                         loadMenuItem.setVisible(true);
-
                         canvas.requestFocus(); // Ensure canvas is focused when the game starts
                     });
                 }
@@ -393,29 +414,5 @@ public class GameWindow {
             alert.setContentText(message);
             alert.showAndWait();
         });
-    }
-
-    animationTimer = new AnimationTimer() {
-        @Override
-        public void handle(long now) {
-            // Animation logic
-        }
-    };
-
-    moveCheckTimer = new AnimationTimer() {
-        @Override
-        public void handle(long now) {
-            // Move check logic
-        }
-    };
-
-    if (gameEngine == null) {
-        throw new IllegalStateException("GameEngine is not initialized");
-    }
-    if (animationTimer == null || moveCheckTimer == null) {
-        throw new IllegalStateException("Timers are not initialized");
-    }
-    if (message == null) {
-        throw new IllegalStateException("Message TextArea is not initialized");
     }
 }
