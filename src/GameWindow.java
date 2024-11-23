@@ -318,7 +318,7 @@ public class GameWindow {
 
     public void quit() {
         cleanup();
-        stage.exit();
+        stage.close();
     }
 
     public void cleanup() {
