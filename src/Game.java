@@ -324,33 +324,26 @@ public class Game {
                 player.previousCombo = combo;
                 player.previousTotalMoveCount = player.totalMoveCount;
 
-                combo = numOfTilesMoved = 0;
-
-                // go to the hash map, find the corresponding method and call it
+                // Perform the move
                 actionMap.get(dir).accept(player);
 
-                // calculate the new score
+                // Update scores and game state
                 player.score += combo / 5 * 2;
+                player.totalMoveCount++;
+                gameOver = numOfTilesMoved == 0 || isFull();
 
-                // determine whether the game is over or not
-                if (numOfTilesMoved > 0) {
-                    player.totalMoveCount++;
-                    gameOver = level == LIMIT || !nextRound();
-                } else
-                    gameOver = isFull();
+                // Notify all players of the updated game state
+                for (Player p : clientList) {
+                    DataOutputStream dos = new DataOutputStream(p.socket.getOutputStream());
+                    sendArray(dos);
+                    sendScore(dos, p);
+                    sendLevel(dos);
+                    sendCombo(dos);
+                    sendMove(dos, p);
+                }
 
-                // update the database if the game is over
                 if (gameOver) {
-                    try {
-                        JokerServer.connect();
-                        for (Player p : clientList) {
-                            JokerServer.putScore(p.name, p.score, p.level);
-                            sendGameOver(new DataOutputStream(p.socket.getOutputStream()));
-                        }
-                        determineWinner();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                    determineWinner();
                 }
             }
         }

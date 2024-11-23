@@ -183,81 +183,37 @@ public class GameWindow {
     }
 
     private void initCanvas() {
-        moveCheckTimer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                if (gameEngine.getMoves() == 1 && !gameEngine.isGameOver()) {
-                    updateCurrentPlayer();
-                    canvas.setOnKeyPressed(event -> {
-                        try {
-                            gameEngine.moveMerge(event.getCode().toString());
-                        } catch (IOException ex) {
-                            ex.printStackTrace(); //debug
-                            System.exit(-1); //cannot just end it, project need to show a box or a window to end it
-                        }
-                        //            scoreLabel.setText("Score: " + gameEngine.getScore());
-                        //            levelLabel.setText("Level: " + gameEngine.getLevel());
-                        //            comboLabel.setText("Combo: " + gameEngine.getCombo());
-                        //            moveCountLabel.setText("# of Moves: " + gameEngine.getMoveCount());
-                    });
-                } else {
-                    // Remove the event handler if the player cannot move
-                    canvas.setOnKeyPressed(null);
-                }
-            }
-        };
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        canvas.setFocusTraversable(true); // Make sure the canvas can receive focus
 
-        animationTimer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                updateCurrentPlayer();
-                render();
-                updateTimerDisplay();
-                updateMessage();
-                if (gameEngine.isGameOver()) {
-                    System.out.println("Game Over!");
-                    animationTimer.stop();
-                    saveMenuItem.setVisible(false);
-                    loadMenuItem.setVisible(false);
-                    Platform.runLater(() -> {
-                        try {
-                            new gameWinnerWindow(gameEngine);
-                            new ScoreboardWindow();
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    });
-                } else if (gameEngine.getMoveLeft() == 4){
-                    cancelButton.setVisible(true);
-                    cancelButton.setDisable(false);
-                } else if (gameEngine.getMoveLeft() == 0) {
-                    cancelButton.setVisible(false);
-                    cancelButton.setDisable(true);
-                }
+        canvas.setOnKeyPressed(event -> {
+            try {
+                gameEngine.moveMerge(event.getCode().toString());
+                render(); // Refresh the UI after a move
+            } catch (IOException ex) {
+                ex.printStackTrace(); // Debugging only
+                showErrorDialog("An error occurred while processing your move.");
             }
-        };
-        canvas.requestFocus();
+        });
+
+        // Request focus so that the canvas receives key events
+        Platform.runLater(() -> canvas.requestFocus());
     }
 
     private void render() {
         if (gameEngine == null) return; // Ensure gameEngine is not null
-
         double w = canvas.getWidth();
         double h = canvas.getHeight();
-
         double sceneSize = Math.min(w, h);
         double blockSize = sceneSize / GameEngine.SIZE;
-        double padding = blockSize * .05;
+        double padding = blockSize * 0.05;
         double startX = (w - sceneSize) / 2;
         double startY = (h - sceneSize) / 2;
         double cardSize = blockSize - (padding * 2);
-
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, w, h);
-
         double y = startY;
         int v;
-
         scoreLabel.setText("Score: " + gameEngine.getScore());
         levelLabel.setText("Level: " + gameEngine.getLevel());
         comboLabel.setText("Combo: " + gameEngine.getCombo());
@@ -268,12 +224,10 @@ public class GameWindow {
             double x = startX;
             for (int j = 0; j < GameEngine.SIZE; j++) {
                 gc.drawImage(images[0], x, y, blockSize, blockSize);  // Draw the background
-
                 v = gameEngine.getValue(i, j); // v = the values(card number) sent by server
-
-                if (v > 0)  // if a card is in the place, draw it
+                if (v > 0) { // if a card is in the place, draw it
                     gc.drawImage(images[v], x + padding, y + padding, cardSize, cardSize);
-
+                }
                 x += blockSize;
             }
             y += blockSize;
@@ -395,6 +349,8 @@ public class GameWindow {
 
                         saveMenuItem.setVisible(true);
                         loadMenuItem.setVisible(true);
+
+                        canvas.requestFocus(); // Ensure canvas is focused when the game starts
                     });
                 }
             }
@@ -425,6 +381,16 @@ public class GameWindow {
             alert.setTitle("Error");
             alert.setHeaderText(message);
             alert.setContentText(ex.getMessage());
+            alert.showAndWait();
+        });
+    }
+
+    private void showErrorDialog(String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText(message);
             alert.showAndWait();
         });
     }

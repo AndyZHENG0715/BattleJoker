@@ -273,10 +273,16 @@ public class GameEngine {
      */
 
     public void moveMerge(String dir) throws IOException { //whatever you move the puzzle
-        System.out.println(dir);
-        dos.write(dir.charAt(0));//send out the first char only
-        dos.flush(); //force output
-        //send the direction to the sever
+        if (!getCanMove()) {
+            return; // Player cannot move
+        }
+
+        System.out.println("Move direction: " + dir);
+        dos.write(dir.charAt(0)); // Send out the first char only
+        dos.flush(); // Force output
+
+        // Assume the server processes the move and updates the game state
+        // Ensure the server sends back the updated board and game state
     }
 
     public int getValue(int r, int c) {
