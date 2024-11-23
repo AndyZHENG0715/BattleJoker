@@ -34,9 +34,15 @@
             <Label fx:id="scoreLabel" textAlignment="CENTER">Score: 0</Label>
             <Label fx:id="levelLabel" textAlignment="CENTER">Level: 0</Label>
             <Label fx:id="comboLabel" textAlignment="CENTER">Combo: 0</Label>
+            <Label fx:id="currentPlayerLabel" textAlignment="CENTER">Current Player: --</Label>
             <Label fx:id="moveCountLabel" textAlignment="CENTER"># of Moves: 0</Label>
+            <Label fx:id="numOfPlayersLabel" text="Number of Players: 0" textAlignment="CENTER">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Label>
             <Label fx:id="timerLabel" textAlignment="CENTER">Time: 0.00s</Label>
-            <Label fx:id="currentPlayerLabel" textAlignment="CENTER">Player: --</Label>
+
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
