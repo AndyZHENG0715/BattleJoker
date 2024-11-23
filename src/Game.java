@@ -84,7 +84,7 @@ public class Game {
 
             // Send initial turn notification
             if (currentPlayer != null) {
-                sendTurnNotification(out, currentPlayer.equals(player));
+                sendTurnNotification(out, false);
             }
             sendMoveCountNotification(out, 0); // No moves left initially
 
@@ -219,11 +219,11 @@ public class Game {
 
 
     private void loadPuzzleFromStream(DataInputStream in) throws IOException {
-        int newSize = in.readInt();
-        if (newSize != SIZE) {
-            throw new IOException("Invalid puzzle size");
-        }
         synchronized (board) {
+            int newSize = in.readInt();
+            if (newSize != SIZE) {
+                throw new IOException("Invalid puzzle size");
+            }
             for (int i = 0; i < board.length; i++) {
                 int value = in.readInt();
                 if (value < 0 || value > LIMIT) {
@@ -299,24 +299,41 @@ public class Game {
             if (board[j] <= 0) continue;
             v = board[j];
             board[j] = 0;
-            
+
+            // Move as far as possible into empty spaces
             while ((j - d) >= 0 && (j - d) < board.length && board[j - d] == 0) {
                 j -= d;
             }
-            
-            if ((j - d) >= 0 && (j - d) < board.length && board[j - d] == v) {
-                board[j - d]++;
+
+            // Merge as long as possible with same-valued tiles
+            while ((j - d) >= 0 && (j - d) < board.length && board[j - d] == v) {
+                j -= d;
+                board[j] = 0;
+                v++;
                 player.score++;
                 combo++;
-            } else {
-                board[j] = v;
+            }
+
+            board[j] = v;
+
+            // Update the level if necessary
+            if (v > level) {
+                level = v;
+                for (Player p : clientList) {
+                    p.level = v;
+                }
+            }
+
+            // Track the tile movement
+            if (i != j) {
+                numOfTilesMoved++;
             }
         }
     }
 
     public void moveMerge(String dir, Player player) {
-        if (actionMap.containsKey(dir)) {
-            synchronized (board) {
+        synchronized (board) {
+            if (actionMap.containsKey(dir)) {
                 // Store previous state
                 player.previousBoard = board.clone();
                 player.previousScore = player.score;
@@ -324,26 +341,46 @@ public class Game {
                 player.previousCombo = combo;
                 player.previousTotalMoveCount = player.totalMoveCount;
 
+                combo = numOfTilesMoved = 0;
+
                 // Perform the move
                 actionMap.get(dir).accept(player);
 
                 // Update scores and game state
                 player.score += combo / 5 * 2;
-                player.totalMoveCount++;
-                gameOver = numOfTilesMoved == 0 || isFull();
+
+                if (numOfTilesMoved > 0) {
+                    player.totalMoveCount++;
+                    gameOver = level == LIMIT || !nextRound();
+                } else {
+                    gameOver = isFull();
+                }
 
                 // Notify all players of the updated game state
                 for (Player p : clientList) {
-                    DataOutputStream dos = new DataOutputStream(p.socket.getOutputStream());
-                    sendArray(dos);
-                    sendScore(dos, p);
-                    sendLevel(dos);
-                    sendCombo(dos);
-                    sendMove(dos, p);
+                    try {
+                        DataOutputStream dos = new DataOutputStream(p.socket.getOutputStream());
+                        sendArray(dos);
+                        sendScore(dos, p);
+                        sendLevel(dos);
+                        sendCombo(dos);
+                        sendMove(dos, p);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 if (gameOver) {
-                    determineWinner();
+                    try {
+                        JokerServer.connect();
+                        for (Player p : clientList) {
+                            JokerServer.putScore(p.name, p.score, p.level);
+                            sendGameOver(new DataOutputStream(p.socket.getOutputStream()));
+                        }
+                        determineWinner();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         }
@@ -358,7 +395,7 @@ public class Game {
             combo = player.previousCombo;
             player.totalMoveCount = player.previousTotalMoveCount;
             player.skillUsed = true;
-            movesLeft += 1;
+            movesLeft -= -1;
 
             // Notify all players of the reverted state
             synchronized (clientList) {

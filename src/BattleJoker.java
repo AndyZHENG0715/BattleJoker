@@ -32,7 +32,7 @@ public class BattleJoker extends Application {
     }
 
     public static void main(String[] args) {
-        System.setErr(new FilteredStream(System.err));  // All JavaFX'es version warnings will not be displayed
+        System.setErr(new FilteredStream(System.err));
 
         launch();  //** start application need call launch, finally cal  start
     }

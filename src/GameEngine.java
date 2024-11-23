@@ -23,7 +23,7 @@ public class GameEngine {
     private boolean gameStarted;
     public static long startTime;
     public static boolean timerStarted = false;
-    private int moves;
+    private int canMove;
     private int moveLeft;
     private String currentPlayer;
     private String winnerName;
@@ -139,8 +139,8 @@ public class GameEngine {
     }
 
     void receiveCanMove(DataInputStream in) throws IOException {
-        moves = in.readInt();
-        System.out.println(moves);
+        canMove = in.readInt();
+        System.out.println(canMove);
     }
 
     void receiveGameStart(DataInputStream in) throws IOException {
@@ -273,16 +273,12 @@ public class GameEngine {
      */
 
     public void moveMerge(String dir) throws IOException { //whatever you move the puzzle
-        if (!getCanMove()) {
-            return; // Player cannot move
-        }
-
         System.out.println("Move direction: " + dir);
+        /// send direction to server
+        dos.writeUTF("Move Merge");
         dos.write(dir.charAt(0)); // Send out the first char only
         dos.flush(); // Force output
 
-        // Assume the server processes the move and updates the game state
-        // Ensure the server sends back the updated board and game state
     }
 
     public int getValue(int r, int c) {
@@ -385,8 +381,8 @@ public class GameEngine {
         dos.flush();
     }
 
-    public int getMoves() {
-        return moves;
+    public int getCanMove() {
+        return canMove;
     }
 
     public String getUpdatePlayer() {

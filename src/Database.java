@@ -6,7 +6,7 @@ public class Database {
     final static String url = "jdbc:sqlite:data/battleJoker.db";
     static Connection conn;
 
-    public static void connect() {
+    public static void connect() throws ClassNotFoundException {
         try {
             if (conn == null || conn.isClosed()) {
                 // Class.forName("org.sqlite.JDBC");
