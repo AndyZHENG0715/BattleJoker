@@ -16,7 +16,7 @@ public class BattleJoker extends Application {
             int serverPort = dialog.getServerPort();
             GameWindow win = new GameWindow(primaryStage, serverIP, serverPort);
             win.setName(dialog.getPlayerName());
-            Database.connect();
+            JokerServer.connect();
 //            clientSocket = new Socket("127.0.0.1", 12345); //change this hard code later
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -26,7 +26,7 @@ public class BattleJoker extends Application {
     @Override
     public void stop() {
         try {
-            Database.disconnect();
+            JokerServer.disconnect();
         } catch (SQLException ignored) {
         }
     }
