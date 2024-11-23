@@ -9,6 +9,11 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -148,7 +153,7 @@ public class GameWindow {
             }
         } else if (gameEngine.getPlayerCount() == 4) {
             if (!gameEngine.getGameStarted()) {
-                numberofPlayerLabel.setText("Number of Players: " + gameEngine.getPlayerCount());
+                numOfPlayersLabel.setText("Number of Players: " + gameEngine.getPlayerCount());
                 gameEngine.setGameStarted(true);
                 initCanvas();
                 gameStart();
@@ -181,7 +186,7 @@ public class GameWindow {
         moveCheckTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (gameEngine.getCanMove() == 1 && !gameEngine.isGameOver()) {
+                if (gameEngine.getMoves() == 1 && !gameEngine.isGameOver()) {
                     updateCurrentPlayer();
                     canvas.setOnKeyPressed(event -> {
                         try {
@@ -327,7 +332,7 @@ public class GameWindow {
     }
 
     private void updatePlayerNumber() {
-        numberofPlayerLabel.setText("Number of Players: " + gameEngine.getPlayerCount());
+        numOfPlayersLabel.setText("Number of Players: " + gameEngine.getPlayerCount());
     }
 
     private void updateCurrentPlayer() {

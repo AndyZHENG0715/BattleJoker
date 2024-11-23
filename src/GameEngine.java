@@ -387,7 +387,7 @@ public class GameEngine {
         return updatePlayer;
     }
 
-    public void setUpate() {
+    public void setUpdate() {
         this.update = false;
     }
 
