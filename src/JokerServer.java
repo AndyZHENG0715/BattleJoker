@@ -67,19 +67,6 @@ public class JokerServer {
                     e.printStackTrace();
                 }
             });
-
-            Thread receiverThread = new Thread(() -> {
-                try {
-                    dis = new DataInputStream(clientSocket.getInputStream());
-                    while(true){
-                        char data = (char) dis.read();
-                        // Handle data
-                    }
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            });
-            receiverThread.start();
         }
     }
 

@@ -103,16 +103,9 @@ public class GameEngine {
     });
 
     void receiveCancelAction(DataInputStream dis) throws IOException {
-        try {
-            cancelPlayer = dis.readUTF();
-            cancel = true;
-            System.out.println("Cancel action received from: " + cancelPlayer);
-            // Notify all clients about the cancel action
-            broadcastCancelAction(cancelPlayer);
-        } catch (IOException e) {
-            System.err.println("[ERROR] Failed to receive cancel action: " + e.getMessage());
-            e.printStackTrace();
-        }
+        cancelPlayer = dis.readUTF();
+        cancel = true;
+        System.out.println(cancelPlayer);
     }
 
     void receiveUpdatePuzzle(DataInputStream in) throws IOException {
@@ -122,17 +115,8 @@ public class GameEngine {
     }
 
     void receiveNewGame(DataInputStream in) throws IOException {
-        try {
-            newGame = in.readInt();
-            System.out.println("New game command received: " + newGame);
-            if (newGame == 1) {
-                resetGameState();
-                broadcastNewGame();
-            }
-        } catch (IOException e) {
-            System.err.println("[ERROR] Failed to receive new game command: " + e.getMessage());
-            e.printStackTrace();
-        }
+        newGame = in.readInt();
+        System.out.println(newGame);
     }
 
     void receiveWinner(DataInputStream in) throws IOException {
@@ -507,18 +491,15 @@ public class GameEngine {
     }
 
     private void updateGameState() {
-        synchronized (board) {
-            updateCurrentPlayer();
-            updateBoard();
-            updateScore();
-            updateLevel();
-            updateCombo();
-            updateMoveCount();
-            updateGameOver();
-            updatePlayerCount();
-            updateGameStarted();
-            broadcastGameState();
-        }
+        updateCurrentPlayer();
+        updateBoard();
+        updateScore();
+        updateLevel();
+        updateCombo();
+        updateMoveCount();
+        updateGameOver();
+        updatePlayerCount();
+        updateGameStarted();
     }
 
     private void updateCurrentPlayer() {
@@ -561,39 +542,5 @@ public class GameEngine {
 
     private void updateGameStarted() {
         System.out.println("Game Started Status(Updated): " + gameStarted);
-    }
-
-    // Additional method to broadcast cancel action to all clients
-    private void broadcastCancelAction(String player) throws IOException {
-        for (Player p : clientList) {
-            DataOutputStream dos = new DataOutputStream(p.socket.getOutputStream());
-            dos.writeUTF("CANCEL:" + player);
-            dos.flush();
-        }
-    }
-
-    // Additional method to broadcast new game to all clients
-    private void broadcastNewGame() throws IOException {
-        for (Player p : clientList) {
-            DataOutputStream dos = new DataOutputStream(p.socket.getOutputStream());
-            dos.writeUTF("NEW_GAME");
-            dos.flush();
-        }
-    }
-
-    private void broadcastGameState() throws IOException {
-        for (Player p : clientList) {
-            DataOutputStream dos = new DataOutputStream(p.socket.getOutputStream());
-            dos.writeUTF("GAME_STATE");
-            dos.writeInt(level);
-            dos.writeInt(score);
-            dos.writeInt(combo);
-            dos.writeInt(totalMoveCount);
-            // Serialize board state
-            for (int value : board) {
-                dos.writeInt(value);
-            }
-            dos.flush();
-        }
     }
 }

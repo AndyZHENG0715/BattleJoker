@@ -1,11 +1,9 @@
 import javafx.application.Application;
 import javafx.stage.Stage;
+
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.sql.SQLException;
-import java.io.DataOutputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
 
 public class BattleJoker extends Application {
 //    Socket clientSocket;
@@ -31,56 +29,6 @@ public class BattleJoker extends Application {
             JokerServer.disconnect();
         } catch (SQLException ignored) {
         }
-    }
-
-    private void sendMoveCommand(String direction) {
-        try {
-            DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
-            dos.writeChar(direction.charAt(0)); // Use writeChar for consistency
-            dos.flush();
-            System.out.println("[DEBUG] Move command sent: " + direction);
-        } catch (IOException e) {
-            System.err.println("[ERROR] Failed to send move command: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    // Update listener to handle server responses
-    private void listenForServerResponses() {
-        new Thread(() -> {
-            try (DataInputStream dis = new DataInputStream(clientSocket.getInputStream())) {
-                while (true) {
-                    String response = dis.readUTF();
-                    handleServerResponse(response);
-                }
-            } catch (IOException e) {
-                System.err.println("[ERROR] Lost connection to server.");
-                e.printStackTrace();
-                System.exit(-1);
-            }
-        }).start();
-    }
-
-    private void handleServerResponse(String response) {
-        if (response.startsWith("GAME_STATE")) {
-            // Deserialize game state
-            try {
-                int level = dis.readInt();
-                int score = dis.readInt();
-                int combo = dis.readInt();
-                int moveCount = dis.readInt();
-                int[] boardState = new int[SIZE * SIZE];
-                for (int i = 0; i < SIZE * SIZE; i++) {
-                    boardState[i] = dis.readInt();
-                }
-                gameEngine.updateState(level, score, combo, moveCount, boardState);
-                render();
-            } catch (IOException e) {
-                System.err.println("[ERROR] Failed to deserialize game state: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
-        // Handle other response types
     }
 
     public static void main(String[] args) {

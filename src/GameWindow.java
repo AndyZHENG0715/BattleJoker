@@ -130,7 +130,7 @@ public class GameWindow {
 //        gameEngine = GameEngine.getInstance(serverIP, serverPort); // Initialize GameEngine
 
         // Initialize timers before starting the game
-        initGameTimers();
+//        initGameTimers();
 
         stage.show();
 
@@ -192,7 +192,6 @@ public class GameWindow {
                 updateMessage();
             }
         };
-        animationTimer.start(); // Start the AnimationTimer
     }
 
     private void gameStart() {
@@ -211,6 +210,8 @@ public class GameWindow {
     private void initCanvas() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         canvas.setFocusTraversable(true); // Ensure the canvas can receive focus
+
+        // Set up key event handler once
         canvas.setOnKeyPressed(event -> {
             try {
                 // Only process the key event if the player can move and the game is not over
