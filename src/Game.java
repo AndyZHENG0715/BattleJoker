@@ -3,6 +3,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -160,45 +161,29 @@ public class Game {
 
     private void handleMoveMerge(Player player, DataInputStream in, DataOutputStream out) throws IOException {
         System.out.println("[DEBUG] Handling move command from player: " + player.name);
-        char direction = in.readChar();  // Read as char instead of byte
+        char direction = in.readChar();
         System.out.println("[DEBUG] Received direction: " + direction);
-        
-        // Validate direction
-        if ("UDLR".indexOf(direction) == -1) {
-            System.err.println("[ERROR] Invalid direction received: " + (int)direction);
-            return;
+
+        // Perform the move
+        Consumer<Player> moveAction = actionMap.get(String.valueOf(direction));
+        if (moveAction != null) {
+            moveAction.accept(player);
+            
+            // Send updated board to client
+            sendBoard(out);
+        } else {
+            System.err.println("[ERROR] Invalid direction received: " + direction);
         }
-        // ... rest of move handling
-        System.out.print(player.name + ": ");
-        char dir = in.readChar();
-        System.out.println(dir);
+    }
 
-        if (player.equals(currentPlayer)) {
-            synchronized (clientList) {
-                moveMerge("" + dir, player);
-
-                sendScore(out, player);
-                sendLevel(out);
-                sendCombo(out);
-                sendMove(out, player);
-
-                for (Player s : clientList) {
-                    DataOutputStream dos = new DataOutputStream(s.socket.getOutputStream());
-                    dos.write(dir);
-                    dos.flush();
-                    sendArray(dos);
-                    sendLevel(dos);
-                }
-
-                movesLeft--;
-
-                if (movesLeft == 0) {
-                    endTurn(out);
-                } else {
-                    sendMoveCountNotification(out, movesLeft);
-                }
-            }
+    private void sendBoard(DataOutputStream out) throws IOException {
+        out.writeChar('A'); // Command identifier for 'Array'
+        out.writeInt(board.length);
+        for (int value : board) {
+            out.writeInt(value);
         }
+        out.flush();
+        System.out.println("[DEBUG] Sent updated board to client");
     }
 
     private void endTurn(DataOutputStream out) throws IOException {
@@ -394,6 +379,7 @@ public class Game {
                 }
             }
         }
+        System.out.println("[DEBUG] Board after move: " + Arrays.toString(board));
     }
 
     public void useCancelSkill(Player player) throws IOException {

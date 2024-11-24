@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class GameEngine {
 //    Thread receiverThread; // for receiving data sent from the server
@@ -35,6 +36,7 @@ public class GameEngine {
     private boolean update = false;
     private String cancelPlayer;
     private boolean cancel = false;
+    private GameWindow gameWindow;
 
     //    private int numOfTilesMoved;
     //    private final Map<String, Runnable> actionMap = new HashMap<>();
@@ -235,11 +237,15 @@ public class GameEngine {
 
     void receiveArray(DataInputStream dis) throws IOException {
         int size = dis.readInt();
-        for(int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             board[i] = dis.readInt();
-            System.out.print(board[i]);
         }
-        System.out.println();
+        System.out.println("[DEBUG] Received updated board: " + Arrays.toString(board));
+        
+        // Notify the UI to update
+        if (gameWindow != null) {
+            Platform.runLater(() -> gameWindow.render());
+        }
     }
 
     public static GameEngine getInstance(String IP, int Port) {
@@ -542,5 +548,9 @@ public class GameEngine {
 
     private void updateGameStarted() {
         System.out.println("Game Started Status(Updated): " + gameStarted);
+    }
+
+    public void setGameWindow(GameWindow gameWindow) {
+        this.gameWindow = gameWindow;
     }
 }

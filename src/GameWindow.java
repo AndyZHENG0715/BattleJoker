@@ -89,6 +89,7 @@ public class GameWindow {
         loadImages();
 
         gameEngine = GameEngine.getInstance(serverIP, serverPort); // Initialize GameEngine
+        gameEngine.setGameWindow(this);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("mainUI.fxml"));
 
@@ -301,41 +302,23 @@ public class GameWindow {
         Platform.runLater(() -> canvas.requestFocus());
     }
 
-    private void render() {
-        if (gameEngine == null) return; // Ensure gameEngine is not null
-
-        double w = canvas.getWidth();
-        double h = canvas.getHeight();
-        double sceneSize = Math.min(w, h);
-        double blockSize = sceneSize / GameEngine.SIZE;
-        double padding = blockSize * 0.05;
-        double startX = (w - sceneSize) / 2;
-        double startY = (h - sceneSize) / 2;
-        double cardSize = blockSize - (padding * 2);
-
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, w, h);
-
-        double y = startY;
-        int v;
-
-        scoreLabel.setText("Score: " + gameEngine.getScore());
-        levelLabel.setText("Level: " + gameEngine.getLevel());
-        comboLabel.setText("Combo: " + gameEngine.getCombo());
-        moveCountLabel.setText("# of Moves: " + gameEngine.getMoveCount()); // Updated label text
-
-        // Draw the background and cards from left to right, and top to bottom.
-        for (int i = 0; i < GameEngine.SIZE; i++) {
-            double x = startX;
-            for (int j = 0; j < GameEngine.SIZE; j++) {
-                gc.drawImage(images[0], x, y, blockSize, blockSize);  // Draw the background
-                v = gameEngine.getValue(i, j); // v = the values(card number) sent by server
-                if (v > 0) { // if a card is in the place, draw it
-                    gc.drawImage(images[v], x + padding, y + padding, cardSize, cardSize);
-                }
-                x += blockSize;
+    public void render() {
+        // Clear existing tiles
+        gamePane.getChildren().clear();
+        
+        int[] board = gameEngine.getBoard();
+        System.out.println("[DEBUG] Rendering board: " + Arrays.toString(gameEngine.getBoard()));
+        for (int i = 0; i < board.length; i++) {
+            int value = board[i];
+            if (value > 0) {
+                // Create and position the tile
+                ImageView tile = new ImageView(images[value - 1]);
+                int row = i / SIZE;
+                int col = i % SIZE;
+                tile.setX(col * TILE_SIZE);
+                tile.setY(row * TILE_SIZE);
+                gamePane.getChildren().add(tile);
             }
-            y += blockSize;
         }
     }
 
