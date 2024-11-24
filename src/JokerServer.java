@@ -3,11 +3,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executors;
 
 public class JokerServer {
-    ArrayList<Socket> clientList = new ArrayList<>();
+//    ArrayList<Socket> clientList = new ArrayList<>();
     final static String url = "jdbc:sqlite:data/battleJoker.db";
     static Connection conn;
 //    final int[] board = new int[SIZE * SIZE];
@@ -40,6 +40,7 @@ public class JokerServer {
             Socket clientSocket = srvSocket.accept();
             Player player = new Player(clientSocket, "", 0, 0, 1);
             Game assignedGame = null;
+
             synchronized (games) { //lock the list, when using the muti-thread
                 for (Game game : games) {
                     if (game.addPlayer(player)) {

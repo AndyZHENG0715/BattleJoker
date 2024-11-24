@@ -7,7 +7,7 @@
 <?import javafx.scene.text.Font?>
 
 <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="401.0" prefWidth="459.0" style="-fx-background-color: #f0f0f0;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
-    <Label alignment="CENTER" text="Game Winner" textAlignment="CENTER" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #333;">
+    <Label alignment="CENTER" text="GAME END!" textAlignment="CENTER" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #333;">
         <font>
             <Font size="28.0" />
         </font>
@@ -32,7 +32,7 @@
             <Font size="20.0" />
         </font>
     </Label>
-    <Label fx:id="Time" text="Total time: " textAlignment="CENTER" style="-fx-font-size: 20px;">
+    <Label fx:id="Time" text="Total Time: " textAlignment="CENTER" style="-fx-font-size: 20px;">
         <font>
             <Font size="20.0" />
         </font>

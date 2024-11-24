@@ -2,71 +2,62 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
 
-<VBox prefHeight="894.0" prefWidth="748.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-    <MenuBar fx:id="menuBar" VBox.vgrow="NEVER">
-        <Menu mnemonicParsing="false" text="Game">
+<VBox prefHeight="894.0" prefWidth="748.0" style="-fx-background-color: #2C3E50;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <MenuBar fx:id="menuBar" style="-fx-background-color: #ffffff;" VBox.vgrow="NEVER">
+        <Menu mnemonicParsing="false" text="Game" style="-fx-text-fill: white;">
             <MenuItem fx:id="saveMenuItem" text="Save Game" visible="false"/>
             <MenuItem fx:id="loadMenuItem" text="Load Game" visible="false"/>
         </Menu>
-        <Menu mnemonicParsing="false" text="Help">
+        <Menu mnemonicParsing="false" text="Help" style="-fx-text-fill: white;">
             <MenuItem fx:id="mnuAbout" mnemonicParsing="false" text="About..." />
         </Menu>
     </MenuBar>
-    <HBox style="-fx-background-color: #a88;">
-        <VBox>
-            <Label fx:id="nameLabel" text="Name" textAlignment="CENTER">
+    <HBox spacing="20" style="-fx-background-color: #34495E; -fx-padding: 15;">
+        <VBox spacing="10" style="-fx-background-color: #2C3E50; -fx-padding: 15; -fx-background-radius: 10;" prefWidth="200">
+            <Label fx:id="nameLabel" text="Name" style="-fx-text-fill: #ECF0F1;" textAlignment="CENTER">
                 <font>
-                    <Font name="Impact" size="20.0" />
+                    <Font name="System Bold" size="24.0" />
                 </font>
             </Label>
-            <Label fx:id="scoreLabel" textAlignment="CENTER">Score: 0</Label>
-            <Label fx:id="levelLabel" textAlignment="CENTER">Level: 0</Label>
-            <Label fx:id="comboLabel" textAlignment="CENTER">Combo: 0</Label>
-            <Label fx:id="currentPlayerLabel" textAlignment="CENTER">Current Player: --</Label>
-            <Label fx:id="moveCountLabel" textAlignment="CENTER"># of Moves: 0</Label>
-            <Label fx:id="numOfPlayersLabel" text="Number of Players: 0" textAlignment="CENTER">
+            <Label fx:id="scoreLabel" style="-fx-text-fill: #3498DB;" textAlignment="CENTER">Score: 0</Label>
+            <Label fx:id="levelLabel" style="-fx-text-fill: #2ECC71;" textAlignment="CENTER">Level: 0</Label>
+            <Label fx:id="comboLabel" style="-fx-text-fill: #E74C3C;" textAlignment="CENTER">Combo: 0</Label>
+            <Label fx:id="currentPlayerLabel" style="-fx-text-fill: #F1C40F;" textAlignment="CENTER">Current Player: --</Label>
+            <Label fx:id="moveCountLabel" style="-fx-text-fill: #9B59B6;" textAlignment="CENTER"># of Moves: 0</Label>
+            <Label fx:id="numOfPlayersLabel" style="-fx-text-fill: #1ABC9C;" text="Number of Players: 0" textAlignment="CENTER">
                 <font>
                     <Font size="14.0" />
                 </font>
             </Label>
-            <Label fx:id="timerLabel" textAlignment="CENTER">Time: 0.00s</Label>
-
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
+            <Label fx:id="timerLabel" style="-fx-text-fill: #E67E22;" textAlignment="CENTER">Time: 0.00s</Label>
         </VBox>
-        <VBox>
-            <Button fx:id="goButton" text="Start Game!" visible="false" disable="true" style="-fx-font-size: 15px;">
+        <VBox spacing="10" alignment="CENTER">
+            <Button fx:id="goButton" text="Start Game!" visible="false" disable="true"
+                    style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-font-size: 15px; -fx-background-radius: 5; -fx-cursor: hand;">
                 <font>
                     <Font size="15.0"/>
                 </font>
             </Button>
-            <Button fx:id="cancelButton" text="Cancel" visible="false" disable="true" focusTraversable="false" style="-fx-font-size: 15px;">
+            <Button fx:id="cancelButton" text="Cancel" visible="false" disable="true" focusTraversable="false"
+                    style="-fx-background-color: #C0392B; -fx-text-fill: white; -fx-font-size: 15px; -fx-background-radius: 5; -fx-cursor: hand;">
                 <font>
                     <Font size="15.0"/>
                 </font>
             </Button>
         </VBox>
-        <VBox>
-            <TextArea fx:id="message" editable="false" prefHeight="150" focusTraversable="false" style="-fx-font-size: 14px; -fx-background-color: #fff; -fx-border-color: #ccc; -fx-border-radius: 5px; -fx-padding: 10px;">
+        <VBox prefWidth="300">
+            <TextArea fx:id="message" editable="false" wrapText="true" focusTraversable="false"
+                      style="-fx-font-size: 14px; -fx-background-color: #ECF0F1; -fx-border-color: #BDC3C7; -fx-border-radius: 5; -fx-background-radius: 5; -fx-text-fill: #2C3E50;">
             </TextArea>
         </VBox>
     </HBox>
     <BorderPane fx:id="boardPane">
         <center>
-            <Pane style="-fx-background-color: #a88;" BorderPane.alignment="CENTER">
+            <Pane style="-fx-background-color: #34495E;" BorderPane.alignment="CENTER">
                 <Canvas fx:id="canvas" />
             </Pane>
         </center>

@@ -24,7 +24,7 @@ public class GameEngine {
     public static long startTime;
     public static boolean timerStarted = false;
     private int canMove;
-    private int moveLeft;
+    private int movesLeft;
     private String currentPlayer;
     private String winnerName;
     private int winnerScore;
@@ -75,7 +75,7 @@ public class GameEngine {
                         receiveCanMove(dis);
                         break;
                     case 'N':
-                        receiveMoveLeft(dis);
+                        receiveMovesLeft(dis);
                         break;
                     case 'Z':
                         receiveCurrentPlayer(dis);
@@ -133,9 +133,9 @@ public class GameEngine {
         System.out.println(currentPlayer);
     }
 
-    void receiveMoveLeft(DataInputStream in) throws IOException {
-        moveLeft = in.readInt();
-        System.out.println(moveLeft);
+    void receiveMovesLeft(DataInputStream in) throws IOException {
+        movesLeft = in.readInt();
+        System.out.println(movesLeft);
     }
 
     void receiveCanMove(DataInputStream in) throws IOException {
@@ -343,8 +343,8 @@ public class GameEngine {
         return gameStarted;
     }
 
-    public int getMoveLeft() {
-        return moveLeft;
+    public int getMovesLeft() {
+        return movesLeft;
     }
 
     public String getCurrentPlayer() {
@@ -385,7 +385,7 @@ public class GameEngine {
         return canMove;
     }
 
-    public String getUpdatePlayer() {
+    public String getUpdatedPlayer() {
         return updatePlayer;
     }
 
@@ -410,7 +410,7 @@ public class GameEngine {
     }
 
     public void cancelAction() throws IOException {
-        dos.write('B');
+        dos.writeUTF("Cancel Last Action");
         dos.flush();
     }
 

@@ -4,27 +4,72 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.Region?>
 
-<VBox alignment="CENTER" prefHeight="150.0" prefWidth="300.0" spacing="10" xmlns="http://javafx.com/javafx/8"
-      xmlns:fx="http://javafx.com/fxml/1">
-    <TextField fx:id="nameField" alignment="CENTER" maxWidth="200" minWidth="200" promptText="Input Your Name Here">
+<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="20"
+      xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+
+    <style>
+        .root {
+        -fx-background-image: url('background.jpg');
+        -fx-background-size: cover;
+        -fx-padding: 20;
+        }
+
+        .game-text-field {
+        -fx-background-color: rgba(255, 255, 255, 0.85);
+        -fx-border-radius: 5;
+        -fx-background-radius: 5;
+        -fx-border-color: #4a90e2;
+        -fx-border-width: 2;
+        -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 2);
+        }
+
+        .game-button {
+        -fx-background-color: #4a90e2;
+        -fx-text-fill: white;
+        -fx-font-weight: bold;
+        -fx-min-width: 200px;
+        -fx-min-height: 50px;
+        -fx-background-radius: 25;
+        -fx-cursor: hand;
+        -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 2);
+        }
+
+        .game-button:hover {
+        -fx-background-color: #357abd;
+        -fx-scale-x: 1.05;
+        -fx-scale-y: 1.05;
+        }
+
+        .game-button:pressed {
+        -fx-background-color: #2766a8;
+        }
+    </style>
+
+    <Region prefHeight="50.0" />
+    <TextField fx:id="nameField" alignment="CENTER" maxWidth="300" minWidth="300"
+               promptText="Input Your Name Here" styleClass="game-text-field">
         <font>
-            <Font size="17.0"/>
+            <Font size="18.0"/>
         </font>
     </TextField>
-    <TextField fx:id="ipField" alignment="CENTER" maxWidth="200" minWidth="200" promptText="Input Server IP Here">
+    <TextField fx:id="ipField" alignment="CENTER" maxWidth="300" minWidth="300"
+               promptText="Input Server IP Here" styleClass="game-text-field">
         <font>
-            <Font size="17.0"/>
+            <Font size="18.0"/>
         </font>
     </TextField>
-    <TextField fx:id="portField" alignment="CENTER" maxWidth="200" minWidth="200" promptText="Input Server Port Here">
+    <TextField fx:id="portField" alignment="CENTER" maxWidth="300" minWidth="300"
+               promptText="Input Server Port Here" styleClass="game-text-field">
         <font>
-            <Font size="17.0"/>
+            <Font size="18.0"/>
         </font>
     </TextField>
-    <Button fx:id="goButton" text="GO!">
+    <Region prefHeight="20.0" />
+    <Button fx:id="goButton" text="Go!" styleClass="game-button">
         <font>
-            <Font size="15.0"/>
+            <Font size="20.0"/>
         </font>
     </Button>
 </VBox>

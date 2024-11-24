@@ -8,7 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 public class gameFullWindow {
@@ -17,7 +16,7 @@ public class gameFullWindow {
     @FXML
     private Button waitButton;
     @FXML
-    private Button leaveButton;
+    private Button quitButton;
     @FXML
     private Label warningLabel;
 
@@ -26,49 +25,43 @@ public class gameFullWindow {
 
     public gameFullWindow(GameEngine gameEngine) throws IOException {
         this.gameEngine = gameEngine;
-
         FXMLLoader loader = new FXMLLoader(getClass().getResource("gameFull.fxml"));
         loader.setController(this);
         Parent root = loader.load();
         Scene scene = new Scene(root);
-
         stage = new Stage();
+
         stage.setScene(scene);
         stage.setTitle("Battle Joker");
         stage.setMinWidth(scene.getWidth());
         stage.setMinHeight(scene.getHeight());
-
         waitButton.setOnMouseClicked(event -> {
             try {
-                OnWaitButtonClick(event);
+                onWaitButtonClick(event);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
-
-        leaveButton.setOnMouseClicked(this::OnLeaveButtonClick);
-
+        quitButton.setOnMouseClicked(this::onQuitButtonClick);
         initCanvas();
         animationTimer.start();
-
         stage.showAndWait();
     }
 
     @FXML
-    void OnWaitButtonClick(Event event) throws IOException {
+    void onWaitButtonClick(Event event) throws IOException {
         gameEngine.waitStart();
         waitButton.setVisible(false);
         waitButton.setDisable(true);
-        leaveButton.setVisible(false);
-        leaveButton.setDisable(true);
-
-        warningLabel.setText("You are queuing, Please Wait!");
+        quitButton.setVisible(false);
+        quitButton.setDisable(true);
+        warningLabel.setText("Please wait for the new game to start...");
     }
 
     @FXML
-    void OnLeaveButtonClick(Event event) {
+    void onQuitButtonClick(Event event) {
         stage.close();
-        System.exit(0);
+        System.exit(-1);
     }
 
     private void initCanvas() {

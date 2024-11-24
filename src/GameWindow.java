@@ -16,12 +16,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -62,10 +59,10 @@ public class GameWindow {
     Label timerLabel;
 
     @FXML
-    private Button goButton;
+    Button goButton;
 
     @FXML
-    private Button cancelButton;
+    Button cancelButton;
 
     @FXML
     MenuItem saveMenuItem;
@@ -130,10 +127,10 @@ public class GameWindow {
             }
         });
 
-        gameEngine = GameEngine.getInstance(serverIP, serverPort); // Initialize GameEngine
+//        gameEngine = GameEngine.getInstance(serverIP, serverPort); // Initialize GameEngine
 
         // Initialize timers before starting the game
-        initGameTimers();
+//        initGameTimers();
 
         stage.show();
 
@@ -196,7 +193,7 @@ public class GameWindow {
         gameEngine.startTimer();  // Start the timer in GameEngine
         animationTimer.start();
         moveCheckTimer.start();
-        message.appendText("Message: Game Started\n");
+        message.appendText("Message: Game start!\n");
     }
 
     private void loadImages() throws IOException {
@@ -206,17 +203,93 @@ public class GameWindow {
 
     private void initCanvas() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        canvas.setFocusTraversable(true); // Make sure the canvas can receive focus
+        canvas.setFocusTraversable(true); // Ensure the canvas can receive focus
 
+        // Set up key event handler once
         canvas.setOnKeyPressed(event -> {
             try {
-                gameEngine.moveMerge(event.getCode().toString());
-                render(); // Refresh the UI after a move
+                // Only process the key event if the player can move and the game is not over
+                if (gameEngine.getCanMove() == 1 && !gameEngine.isGameOver()) {
+                    gameEngine.moveMerge(event.getCode().toString());
+                    render(); // Refresh the UI after a move
+                    // Update UI labels
+                    scoreLabel.setText("Score: " + gameEngine.getScore());
+                    levelLabel.setText("Level: " + gameEngine.getLevel());
+                    comboLabel.setText("Combo: " + gameEngine.getCombo());
+                    moveCountLabel.setText("# of Moves: " + gameEngine.getMoveCount());
+                }
             } catch (IOException ex) {
-                ex.printStackTrace(); // Debugging only
+                ex.printStackTrace(); // For debugging
                 showErrorDialog("An error occurred while processing your move.");
             }
         });
+
+        // AnimationTimer to manage the availability of key presses
+        moveCheckTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if (gameEngine.getCanMove() != 1 || gameEngine.isGameOver()) {
+                    // Disable key presses if the player can't move or the game is over
+                    canvas.setOnKeyPressed(null);
+                } else {
+                    // Ensure the key handler is set if the player can move and the game is not over
+                    if (canvas.getOnKeyPressed() == null) {
+                        canvas.setOnKeyPressed(event -> {
+                            try {
+                                gameEngine.moveMerge(event.getCode().toString());
+                                render(); // Refresh the UI after a move
+                                // Update UI labels
+                                scoreLabel.setText("Score: " + gameEngine.getScore());
+                                levelLabel.setText("Level: " + gameEngine.getLevel());
+                                comboLabel.setText("Combo: " + gameEngine.getCombo());
+                                moveCountLabel.setText("# of Moves: " + gameEngine.getMoveCount());
+                            } catch (IOException ex) {
+                                ex.printStackTrace(); // For debugging
+                                showErrorDialog("An error occurred while processing your move.");
+                            }
+                        });
+                    }
+                    updateCurrentPlayer();
+                }
+            }
+        };
+        moveCheckTimer.start(); // Start the timer
+
+        // Main AnimationTimer for the game loop
+        animationTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                updateCurrentPlayer();
+                render();
+                updateTimerDisplay();
+                updateMessage();
+
+                if (gameEngine.isGameOver()) {
+                    System.out.println("Game Over!");
+                    animationTimer.stop();
+                    moveCheckTimer.stop(); // Stop moveCheckTimer as well
+                    saveMenuItem.setVisible(false);
+                    loadMenuItem.setVisible(false);
+                    Platform.runLater(() -> {
+                        try {
+                            new gameWinnerWindow(gameEngine);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    });
+                } else {
+                    int movesLeft = gameEngine.getMovesLeft(); // Ensure this method name is correct
+                    if (movesLeft == 4) {
+                        cancelButton.setVisible(true);
+                        cancelButton.setDisable(false);
+                    } else if (movesLeft == 0) {
+                        cancelButton.setVisible(false);
+                        cancelButton.setDisable(true);
+                    }
+                }
+            }
+        };
+        animationTimer.start(); // Start the main game loop
 
         // Request focus so that the canvas receives key events
         Platform.runLater(() -> canvas.requestFocus());
@@ -224,6 +297,7 @@ public class GameWindow {
 
     private void render() {
         if (gameEngine == null) return; // Ensure gameEngine is not null
+
         double w = canvas.getWidth();
         double h = canvas.getHeight();
         double sceneSize = Math.min(w, h);
@@ -232,14 +306,17 @@ public class GameWindow {
         double startX = (w - sceneSize) / 2;
         double startY = (h - sceneSize) / 2;
         double cardSize = blockSize - (padding * 2);
+
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, w, h);
+
         double y = startY;
         int v;
+
         scoreLabel.setText("Score: " + gameEngine.getScore());
         levelLabel.setText("Level: " + gameEngine.getLevel());
         comboLabel.setText("Combo: " + gameEngine.getCombo());
-        moveCountLabel.setText("Moves: " + gameEngine.getMoveCount());
+        moveCountLabel.setText("# of Moves: " + gameEngine.getMoveCount()); // Updated label text
 
         // Draw the background and cards from left to right, and top to bottom.
         for (int i = 0; i < GameEngine.SIZE; i++) {
@@ -258,10 +335,10 @@ public class GameWindow {
 
     private void updateMessage(){
         if(gameEngine.getUpdate()){
-            message.appendText("Message: " + gameEngine.getUpdatePlayer() + " just Update Last Action!\n");
+            message.appendText("Message: " + gameEngine.getUpdatedPlayer() + " just updated the last action!\n");
             gameEngine.setUpdate();
         }else if(gameEngine.getCancel()){
-            message.appendText("Message: " + gameEngine.getCancelPlayer() + " just Cancel Last Action!\n");
+            message.appendText("Message: " + gameEngine.getCancelPlayer() + " just cancelled the last action!\n");
             gameEngine.setCancel();
         }
     }
@@ -293,8 +370,10 @@ public class GameWindow {
     }
 
     public void quit() {
+        System.out.println("Bye bye!");
         cleanup();
         stage.close();
+        System.exit(-1);
     }
 
     public void cleanup() {
@@ -368,7 +447,7 @@ public class GameWindow {
                         initCanvas();
                         // Ensure timers are initialized before starting the game
                         gameStart();
-                        gameTimer.stop(); // Stop the timer once the game starts
+                        gameTimer.stop();
                         saveMenuItem.setVisible(true);
                         loadMenuItem.setVisible(true);
                         canvas.requestFocus(); // Ensure canvas is focused when the game starts
