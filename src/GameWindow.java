@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 public class GameWindow {
     @FXML
@@ -90,7 +89,6 @@ public class GameWindow {
         loadImages();
 
         gameEngine = GameEngine.getInstance(serverIP, serverPort); // Initialize GameEngine
-        gameEngine.setGameWindow(this);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("mainUI.fxml"));
 
@@ -205,9 +203,8 @@ public class GameWindow {
     }
 
     private void loadImages() throws IOException {
-        for (int i = 0; i < symbols.length; i++) {
+        for (int i = 0; i < symbols.length; i++)
             images[i] = new Image(Files.newInputStream(Paths.get(imagePath + symbols[i] + ".png")));
-        }
     }
 
     private void initCanvas() {
@@ -217,12 +214,19 @@ public class GameWindow {
         // Set up key event handler once
         canvas.setOnKeyPressed(event -> {
             try {
+                // Only process the key event if the player can move and the game is not over
                 if (gameEngine.getCanMove() == 1 && !gameEngine.isGameOver()) {
                     gameEngine.moveMerge(event.getCode().toString());
-                    render(); // Update the display
+                    render(); // Refresh the UI after a move
+                    // Update UI labels
+                    scoreLabel.setText("Score: " + gameEngine.getScore());
+                    levelLabel.setText("Level: " + gameEngine.getLevel());
+                    comboLabel.setText("Combo: " + gameEngine.getCombo());
+                    moveCountLabel.setText("# of Moves: " + gameEngine.getMoveCount());
                 }
             } catch (IOException ex) {
-                ex.printStackTrace();
+                ex.printStackTrace(); // For debugging
+                showErrorDialog("An error occurred while processing your move.");
             }
         });
 
@@ -295,33 +299,38 @@ public class GameWindow {
 
         // Request focus so that the canvas receives key events
         Platform.runLater(() -> canvas.requestFocus());
-        canvas.requestFocus();
     }
 
-    public void render() {
+    private void render() {
+        if (gameEngine == null) return; // Ensure gameEngine is not null
+        double w = canvas.getWidth();
+        double h = canvas.getHeight();
+        double sceneSize = Math.min(w, h);
+        double blockSize = sceneSize / GameEngine.SIZE;
+        double padding = blockSize * 0.05;
+        double startX = (w - sceneSize) / 2;
+        double startY = (h - sceneSize) / 2;
+        double cardSize = blockSize - (padding * 2);
         GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        // Clear the canvas
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
-        int[] board = gameEngine.getBoard();
-        System.out.println("[DEBUG] Rendering board: " + Arrays.toString(board));
-        int SIZE = 4;  // Assuming a 4x4 grid
-        double TILE_SIZE = canvas.getWidth() / SIZE;
-
-        for (int i = 0; i < board.length; i++) {
-            int value = board[i];
-            if (value > 0) {
-                // Compute the position
-                int row = i / SIZE;
-                int col = i % SIZE;
-                double x = col * TILE_SIZE;
-                double y = row * TILE_SIZE;
-
-                // Draw the image
-                Image image = images[value];
-                gc.drawImage(image, x, y, TILE_SIZE, TILE_SIZE);
+        gc.clearRect(0, 0, w, h);
+        double y = startY;
+        int v;
+        scoreLabel.setText("Score: " + gameEngine.getScore());
+        levelLabel.setText("Level: " + gameEngine.getLevel());
+        comboLabel.setText("Combo: " + gameEngine.getCombo());
+        moveCountLabel.setText("# of Moves: " + gameEngine.getMoveCount()); // Updated label text
+        // Draw the background and cards from left to right, and top to bottom.
+        for (int i = 0; i < GameEngine.SIZE; i++) {
+            double x = startX;
+            for (int j = 0; j < GameEngine.SIZE; j++) {
+                gc.drawImage(images[0], x, y, blockSize, blockSize);  // Draw the background
+                v = gameEngine.getValue(i, j); // v = the values(card number) sent by server
+                if (v > 0) { // if a card is in the place, draw it
+                    gc.drawImage(images[v], x + padding, y + padding, cardSize, cardSize);
+                }
+                x += blockSize;
             }
+            y += blockSize;
         }
     }
 

@@ -3,7 +3,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -29,7 +28,7 @@ public class Game {
     private int playerCount;
     private int movesLeft;
 
-    public Game(){
+    public Game() {
         this.board = new int[SIZE * SIZE];
         actionMap.put("U", this::moveUp);
         actionMap.put("D", this::moveDown);
@@ -161,29 +160,42 @@ public class Game {
 
     private void handleMoveMerge(Player player, DataInputStream in, DataOutputStream out) throws IOException {
         System.out.println("[DEBUG] Handling move command from player: " + player.name);
-        char direction = in.readChar();
+        char direction = in.readChar();  // Read as char instead of byte
         System.out.println("[DEBUG] Received direction: " + direction);
 
-        // Perform the move
-        Consumer<Player> moveAction = actionMap.get(String.valueOf(direction));
-        if (moveAction != null) {
-            moveAction.accept(player);
-            
-            // Send updated board to client
-            sendBoard(out);
-        } else {
-            System.err.println("[ERROR] Invalid direction received: " + direction);
+        // Validate direction
+        if ("UDLR".indexOf(direction) == -1) {
+            System.err.println("[ERROR] Invalid direction received: " + (int) direction);
+            return;
         }
-    }
+        // ... rest of move handling
+        System.out.print(player.name + ": ");
+        char dir = in.readChar();
+        System.out.println(dir);
+        if (player.equals(currentPlayer)) {
+            synchronized (clientList) {
+                moveMerge("" + dir, player);
+                sendScore(out, player);
+                sendLevel(out);
+                sendCombo(out);
+                sendMove(out, player);
+                for (Player s : clientList) {
+                    DataOutputStream dos = new DataOutputStream(s.socket.getOutputStream());
+                    dos.write(dir);
+                    dos.flush();
+                    sendArray(dos);
+                    sendLevel(dos);
+                }
 
-    private void sendBoard(DataOutputStream out) throws IOException {
-        out.writeChar('A'); // Command identifier for 'Array'
-        out.writeInt(board.length);
-        for (int value : board) {
-            out.writeInt(value);
+                movesLeft--;
+
+                if (movesLeft == 0) {
+                    endTurn(out);
+                } else {
+                    sendMoveCountNotification(out, movesLeft);
+                }
+            }
         }
-        out.flush();
-        System.out.println("[DEBUG] Sent updated board to client");
     }
 
     private void endTurn(DataOutputStream out) throws IOException {
@@ -379,7 +391,6 @@ public class Game {
                 }
             }
         }
-        System.out.println("[DEBUG] Board after move: " + Arrays.toString(board));
     }
 
     public void useCancelSkill(Player player) throws IOException {
@@ -442,16 +453,18 @@ public class Game {
         clientList.clear();
     }
 
-    void sendCancelAction(DataOutputStream out,Player p) throws IOException {
+    void sendCancelAction(DataOutputStream out, Player p) throws IOException {
         out.write('B');
         out.writeUTF(p.name);
         out.flush();
     }
+
     void sendUpdatePuzzle(DataOutputStream out) throws IOException {
         out.write('K');
         out.writeUTF(currentPlayer.name);
         out.flush();
     }
+
     void sendWinner(DataOutputStream out, Player p) throws IOException {
         out.write('W');
         out.writeUTF(p.name);
@@ -460,73 +473,84 @@ public class Game {
         out.writeInt(p.totalMoveCount);
         out.flush();
     }
+
     void sendCurrentPlayer(DataOutputStream out) throws IOException {
         out.write('Z');
         out.writeUTF(currentPlayer.name);
         out.flush();
     }
-    void sendTurnNotification(DataOutputStream out,boolean canMove) throws IOException {
+
+    void sendTurnNotification(DataOutputStream out, boolean canMove) throws IOException {
         out.write('Y');
-        if(canMove){
+        if (canMove) {
             out.writeInt(1);
-        }else{
+        } else {
             out.writeInt(0);
         }
         out.flush();
     }
+
     void sendMoveCountNotification(DataOutputStream out, int movesLeft) throws IOException {
         out.write('N');
         out.writeInt(movesLeft);
         out.flush();
     }
+
     void sendGameStart(DataOutputStream out) throws IOException {
         out.write('T');
-        if(gameStart){
+        if (gameStart) {
             out.writeInt(1);
-        }else{
+        } else {
             out.writeInt(0);
         }
         out.flush();
     }
-    void sendPlayer(DataOutputStream out) throws IOException{
+
+    void sendPlayer(DataOutputStream out) throws IOException {
         out.write('P');
         out.writeInt(clientList.size());
         out.flush();
     }
-    void sendArray(DataOutputStream out) throws IOException{
+
+    void sendArray(DataOutputStream out) throws IOException {
         //send the array to the client
         out.write('A');
         out.writeInt(board.length);
-        for(int v: board){
+        for (int v : board) {
             out.writeInt(v);
         }
         out.flush();
     }
-    void sendScore(DataOutputStream out, Player player) throws IOException{
+
+    void sendScore(DataOutputStream out, Player player) throws IOException {
         out.write('S');
         out.writeInt(player.score);
         out.flush();
     }
-    void sendLevel(DataOutputStream out) throws IOException{
+
+    void sendLevel(DataOutputStream out) throws IOException {
         out.write('l');
         out.writeInt(level);
         out.flush();
     }
-    void sendCombo(DataOutputStream out) throws IOException{
+
+    void sendCombo(DataOutputStream out) throws IOException {
         out.write('C');
         out.writeInt(combo);
         out.flush();
     }
-    void sendMove(DataOutputStream out, Player player) throws IOException{
+
+    void sendMove(DataOutputStream out, Player player) throws IOException {
         out.write('M');
         out.writeInt(player.totalMoveCount);
         out.flush();
     }
-    void sendGameOver(DataOutputStream out) throws IOException{
+
+    void sendGameOver(DataOutputStream out) throws IOException {
         out.write('G');
-        if(gameOver){
+        if (gameOver) {
             out.writeInt(1);
-        }else{
+        } else {
             out.writeInt(0);
         }
         out.flush();
