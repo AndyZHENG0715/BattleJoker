@@ -138,10 +138,12 @@ public class GameWindow {
             goButton.setVisible(true);
             goButton.setDisable(false);
             goButton.setOnMouseClicked(event -> {
+                System.out.println("[UI] Button clicked");
                 try {
                     OnButtonClick(event);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    System.err.println("[ERROR] Failed to process button click: " + e.getMessage());
+                    e.printStackTrace();
                 }
             });
             waitGameStart();
@@ -169,6 +171,10 @@ public class GameWindow {
     }
 
     private void initGameTimers() {
+        if (gameEngine == null) {
+            System.err.println("[ERROR] GameEngine not initialized");
+            return;
+        }
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
