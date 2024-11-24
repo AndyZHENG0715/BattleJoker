@@ -67,7 +67,53 @@ public class JokerServer {
                     e.printStackTrace();
                 }
             });
+
+            Thread receiverThread = new Thread(() -> {
+                try (DataInputStream dis = new DataInputStream(clientSocket.getInputStream())) {
+                    while (true) {
+                        char data = dis.readChar(); // Use readChar for consistency
+                        System.out.println("Received command: " + data);
+                        handleCommand(data, dis, clientSocket);
+                    }
+                } catch (IOException ex) {
+                    System.err.println("[ERROR] Connection lost with client: " + clientSocket.getRemoteSocketAddress());
+                    ex.printStackTrace();
+                    // Clean up resources and remove player from game
+                    removePlayer(clientSocket);
+                }
+            });
+            receiverThread.start();
         }
+    }
+
+    // Additional method to handle different commands
+    private void handleCommand(char command, DataInputStream dis, Socket clientSocket) throws IOException {
+        switch (command) {
+            case 'U':
+                // Handle Up move
+                processMove("UP", clientSocket);
+                break;
+            case 'D':
+                // Handle Down move
+                processMove("DOWN", clientSocket);
+                break;
+            case 'L':
+                // Handle Left move
+                processMove("LEFT", clientSocket);
+                break;
+            case 'R':
+                // Handle Right move
+                processMove("RIGHT", clientSocket);
+                break;
+            // Handle other commands
+            default:
+                System.err.println("[ERROR] Unknown command received: " + command);
+        }
+    }
+
+    // Ensure proper synchronization when modifying shared resources
+    private synchronized void removePlayer(Socket clientSocket) {
+        // Logic to remove player from clientList and update game state
     }
 
     public static void connect() throws SQLException, ClassNotFoundException {
