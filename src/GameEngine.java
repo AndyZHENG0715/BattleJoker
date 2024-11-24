@@ -44,7 +44,7 @@ public class GameEngine {
             dis = new DataInputStream(clientSocket.getInputStream());
             while(true){
                 char data = (char) dis.read();
-                System.out.println("[NETWORK] Received command: " + data);
+                System.out.print(data + ": ");
                 switch (data){
                     case 'A':
                         // download array
@@ -272,11 +272,12 @@ public class GameEngine {
      *
      */
 
-    public void moveMerge(String dir) throws IOException {
-        System.out.println("[DEBUG] Sending move command: " + dir);
-        dos.writeByte('M');  // Single byte command identifier
-        dos.writeChar(dir.charAt(0));  // Consistent character encoding
-        dos.flush();
+    public void moveMerge(String dir) throws IOException { //whatever you move the puzzle
+        System.out.println("Move direction: " + dir);
+        /// send direction to server
+        dos.writeUTF("Move Merge");
+        dos.writeChar(dir.charAt(0)); // Send out the first char only
+        dos.flush(); // Force output
         System.out.println("[DEBUG] Move command sent successfully");
     }
 
