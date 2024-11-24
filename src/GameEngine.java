@@ -553,4 +553,8 @@ public class GameEngine {
     public void setGameWindow(GameWindow gameWindow) {
         this.gameWindow = gameWindow;
     }
+
+    public int[] getBoard() {
+        return board.clone(); // Return a copy to prevent external modification
+    }
 }
