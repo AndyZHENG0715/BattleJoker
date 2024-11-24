@@ -159,6 +159,16 @@ public class Game {
     }
 
     private void handleMoveMerge(Player player, DataInputStream in, DataOutputStream out) throws IOException {
+        System.out.println("[DEBUG] Handling move command from player: " + player.name);
+        char direction = in.readChar();  // Read as char instead of byte
+        System.out.println("[DEBUG] Received direction: " + direction);
+        
+        // Validate direction
+        if ("UDLR".indexOf(direction) == -1) {
+            System.err.println("[ERROR] Invalid direction received: " + (int)direction);
+            return;
+        }
+        // ... rest of move handling
         System.out.print(player.name + ": ");
         char dir = in.readChar();
         System.out.println(dir);

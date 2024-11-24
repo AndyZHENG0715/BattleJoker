@@ -3,8 +3,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class JokerServer {
 //    ArrayList<Socket> clientList = new ArrayList<>();
@@ -57,8 +57,15 @@ public class JokerServer {
 
             Game finalAssignedGame = assignedGame;
 
+            // Add error handling wrapper
             executor.execute(() -> {
-                finalAssignedGame.serve(player);
+                try {
+                    System.out.println("[DEBUG] Starting game service for player: " + player.name);
+                    finalAssignedGame.serve(player);
+                } catch (Exception e) {
+                    System.err.println("[ERROR] Game service failed: " + e.getMessage());
+                    e.printStackTrace();
+                }
             });
         }
     }

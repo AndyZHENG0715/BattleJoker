@@ -272,15 +272,12 @@ public class GameEngine {
      *
      */
 
-    public void moveMerge(String dir) throws IOException { //whatever you move the puzzle
-        // send direction to server
-        System.out.println("[DEBUG] Attempting move: " + dir);
-        dos.writeUTF("Move Merge");
-        System.out.println("[DEBUG] Sent move command to server");
-        dos.write(dir.charAt(0)); // Send out the first char only
-        System.out.println("[DEBUG] Sent direction: " + dir.charAt(0));
-        dos.flush(); // Force output
-
+    public void moveMerge(String dir) throws IOException {
+        System.out.println("[DEBUG] Sending move command: " + dir);
+        dos.writeByte('M');  // Single byte command identifier
+        dos.writeChar(dir.charAt(0));  // Consistent character encoding
+        dos.flush();
+        System.out.println("[DEBUG] Move command sent successfully");
     }
 
     public int getValue(int r, int c) {
